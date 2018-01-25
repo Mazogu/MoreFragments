@@ -1,16 +1,15 @@
 package com.example.micha.recyclefragment;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,11 +17,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -49,6 +44,7 @@ public class CheeseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        RecyclerView recycleCheese = view.findViewById(R.id.cheeseView);
         Log.d(TAG, "onViewCreated: something");
         try {
             InputStream input = getActivity().getAssets().open("cheese_list");
@@ -72,11 +68,39 @@ public class CheeseFragment extends Fragment {
         Log.d(TAG, "onViewCreated: "+ cheeses.toString());
     }
 
-    private class CheeseView extends RecyclerView{
-        public CheeseView(Context context) {
-            super(context);
+    public static class CheeseAdapter extends RecyclerView.Adapter<CheeseHolder>{
+        List<String> cheeseList;
+
+        public CheeseAdapter(List<String> cheeseList) {
+            this.cheeseList = cheeseList;
         }
 
+        @Override
+        public CheeseHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_layout,parent,false);
+            return new CheeseHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(CheeseHolder holder, int position) {
+            holder.text.setText(cheeseList.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return cheeseList.size();
+        }
+
+    }
+
+    public static class CheeseHolder extends RecyclerView.ViewHolder{
+
+        private final TextView text;
+
+        public CheeseHolder(View itemView) {
+            super(itemView);
+            text = itemView.findViewById(R.id.cheeseText);
+        }
     }
 
 
