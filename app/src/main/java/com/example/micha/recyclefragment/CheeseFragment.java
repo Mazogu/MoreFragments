@@ -53,7 +53,7 @@ public class CheeseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         recycleCheese = view.findViewById(R.id.cheeseView);
         filter = view.findViewById(R.id.cheeseFilter);
-        Log.d(TAG, "onViewCreated: something");
+        //Log.d(TAG, "onViewCreated: something");
         try {
             InputStream input = getActivity().getAssets().open("cheese_list");
             byte[] bytes = new byte[input.available()];
@@ -86,11 +86,11 @@ public class CheeseFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(i2==0){
                     cheeseAdapter.resetCheeseList();
-                    Log.d(TAG, "onTextChanged: "+ cheeseAdapter.getCheeseList().toString());
+                    //Log.d(TAG, "onTextChanged: "+ cheeseAdapter.getCheeseList().toString());
                 }
                 else{
                     cheeseAdapter.filterCheeseList(charSequence);
-                    Log.d(TAG, "onTextChanged: "+ cheeseAdapter.getCheeseList().toString());
+                    //Log.d(TAG, "onTextChanged: "+ cheeseAdapter.getCheeseList().toString());
                 }
             }
 
@@ -144,7 +144,6 @@ public class CheeseFragment extends Fragment {
             for (String cheeses:original) {
                 if(cheeses.toLowerCase().startsWith(filter.toString().toLowerCase())){
                     cheeseList.add(cheeses);
-                    Log.d(TAG, "filterCheeseList: Taco");
                     count++;
                 }
                 else if(cheeses.toLowerCase().substring(0,trim).compareTo(filter.toString().toLowerCase()) > 0){
