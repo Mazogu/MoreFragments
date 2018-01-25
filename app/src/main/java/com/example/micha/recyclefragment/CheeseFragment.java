@@ -139,20 +139,14 @@ public class CheeseFragment extends Fragment {
 
         public void filterCheeseList(CharSequence filter){
             cheeseList.clear();
-            int count = 0;
+            boolean foundOne = false;
             int trim = filter.length();
             for (String cheeses:original) {
                 if(cheeses.toLowerCase().startsWith(filter.toString().toLowerCase())){
                     cheeseList.add(cheeses);
-                    count++;
+                    foundOne = true;
                 }
-                else if(cheeses.toLowerCase().substring(0,trim).compareTo(filter.toString().toLowerCase()) > 0){
-                    break;
-                }
-                else if(count == 0){
-                    continue;
-                }
-                else {
+                else if(!cheeses.toLowerCase().startsWith(filter.toString().toLowerCase())&&foundOne){
                     break;
                 }
             }
