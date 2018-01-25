@@ -4,11 +4,15 @@ package com.example.micha.recyclefragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -18,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -26,8 +31,10 @@ import java.util.List;
  */
 public class CheeseFragment extends Fragment {
 
-    List<String> cheeses = new ArrayList<>();
+    private List<String> cheeses = new ArrayList<>();
     public static final String TAG = CheeseFragment.class.getSimpleName();
+    private RecyclerView recycleCheese;
+    private EditText filter;
 
     public CheeseFragment() {
         // Required empty public constructor
@@ -44,7 +51,8 @@ public class CheeseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerView recycleCheese = view.findViewById(R.id.cheeseView);
+        recycleCheese = view.findViewById(R.id.cheeseView);
+        filter = view.findViewById(R.id.cheeseFilter);
         Log.d(TAG, "onViewCreated: something");
         try {
             InputStream input = getActivity().getAssets().open("cheese_list");
@@ -58,21 +66,49 @@ public class CheeseFragment extends Fragment {
             }
         }
         catch (IOException e) {
-            Log.d(TAG, "onViewCreated: failure");
             e.printStackTrace();
         }
         catch (JSONException j){
-            Log.d(TAG, "onViewCreated: Json failure");
             j.printStackTrace();
         }
-        Log.d(TAG, "onViewCreated: "+ cheeses.toString());
+        Collections.sort(cheeses);
+        final CheeseAdapter cheeseAdapter = new CheeseAdapter(cheeses);
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity());
+        recycleCheese.setAdapter(cheeseAdapter);
+        recycleCheese.setLayoutManager(manager);
+        filter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(i2==0){
+                    cheeseAdapter.resetCheeseList();
+                    Log.d(TAG, "onTextChanged: "+ cheeseAdapter.getCheeseList().toString());
+                }
+                else{
+                    cheeseAdapter.filterCheeseList(charSequence);
+                    Log.d(TAG, "onTextChanged: "+ cheeseAdapter.getCheeseList().toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     public static class CheeseAdapter extends RecyclerView.Adapter<CheeseHolder>{
-        List<String> cheeseList;
+        private List<String> cheeseList;
+        private final List<String> original;
 
         public CheeseAdapter(List<String> cheeseList) {
             this.cheeseList = cheeseList;
+            original = new ArrayList<>();
+            original.addAll(cheeseList);
         }
 
         @Override
@@ -90,6 +126,40 @@ public class CheeseFragment extends Fragment {
         public int getItemCount() {
             return cheeseList.size();
         }
+
+        public List<String> getCheeseList() {
+            return cheeseList;
+        }
+
+        public void resetCheeseList(){
+            cheeseList.clear();
+            cheeseList.addAll(original);
+            notifyDataSetChanged();
+        }
+
+        public void filterCheeseList(CharSequence filter){
+            cheeseList.clear();
+            int count = 0;
+            int trim = filter.length();
+            for (String cheeses:original) {
+                if(cheeses.toLowerCase().startsWith(filter.toString().toLowerCase())){
+                    cheeseList.add(cheeses);
+                    Log.d(TAG, "filterCheeseList: Taco");
+                    count++;
+                }
+                else if(cheeses.toLowerCase().substring(0,trim).compareTo(filter.toString().toLowerCase()) > 0){
+                    break;
+                }
+                else if(count == 0){
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+            notifyDataSetChanged();
+        }
+
 
     }
 
